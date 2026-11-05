@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prado’s Filas</title>
+<style>
+:root{--bg:#f4f6f5;--card:#fff;--tx:#1d2723;--mu:#66736d;--g:#177245;--g2:#e6f2ec;--bt:#fff;--bd:#dce3df;--er:#b42318;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101513;--card:#18201c;--tx:#e8efeb;--mu:#93a39b;--g:#3aa876;--g2:#1f2f27;--bt:#07140d;--bd:#2a3731;--er:#f08c82}}
+:root[data-theme="dark"]{--bg:#101513;--card:#18201c;--tx:#e8efeb;--mu:#93a39b;--g:#3aa876;--g2:#1f2f27;--bt:#07140d;--bd:#2a3731;--er:#f08c82}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--bd)}
+.w{max-width:1000px;margin:0 auto;padding:12px 16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.brand{font-size:1.3rem;font-weight:800;color:var(--g);letter-spacing:-.01em}
+.bal{display:flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:99px;padding:3px 12px 3px 4px;font-weight:700}
+.area{display:flex;gap:6px;margin-top:10px}
+.area button{flex:1;padding:9px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;font-weight:600;font-size:.95rem;cursor:pointer}
+.area button.on{background:var(--g);color:var(--bt);border-color:var(--g)}
+main{max-width:1000px;margin:0 auto;padding:16px}
+h2{margin:0 0 12px;font-size:1.2rem}h3{margin:0 0 8px;font-size:1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px}
+.grid .card{margin:0;display:flex;flex-direction:column}.grow{flex:1}
+.mu{color:var(--mu);font-size:.88rem}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--g2);color:var(--g)}
+.b{background:var(--g);color:var(--bt);border:1px solid var(--g);border-radius:8px;padding:9px 14px;font-weight:600;font-size:.92rem;cursor:pointer}
+.b.s{background:transparent;color:var(--g)}.b.d{background:transparent;color:var(--er);border-color:var(--er)}
+.b.sm{padding:5px 10px;font-size:.82rem}.b:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:70px;resize:vertical}
+label{display:block;font-size:.82rem;font-weight:600;margin:12px 0 4px}label:first-of-type{margin-top:0}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--bd)}
+.row:last-child{border:0}
+.cols{display:grid;grid-template-columns:1fr;gap:12px;align-items:start}
+@media(min-width:780px){.cols{grid-template-columns:1.3fr 1fr}.cols.eq{grid-template-columns:1fr 1.2fr}}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;font-weight:600;color:var(--mu);cursor:pointer;white-space:nowrap;font-size:.92rem}
+.tabs button.on{color:var(--g);border-color:var(--g)}
+.opt{display:block;width:100%;border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin-bottom:6px;background:var(--card);text-align:left;color:var(--tx);font:inherit;cursor:pointer}
+.opt.on{border-color:var(--g);background:var(--g2)}.opt b{display:block;font-size:.9rem}
+.lane{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.lane.rec{border:2px solid var(--g);background:var(--g2)}.lane.off{opacity:.5}
+.tag{color:var(--g);font-weight:700;font-size:.78rem}
+.total{font-size:1.3rem;font-weight:800}
+.proto{font-size:1.8rem;font-weight:800;color:var(--g)}
+.live{background:var(--g2);border-radius:8px;padding:10px 12px;margin:10px 0}
+.qty{display:inline-flex;align-items:center;gap:8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#1d2723;color:#fff;padding:9px 16px;border-radius:8px;font-size:.88rem;z-index:9}
+footer{text-align:center;color:var(--mu);font-size:.8rem;padding:16px}
+@media print{header,footer,.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<header><div class="w">
+  <div class="top"><div class="brand">Prado’s Filas</div><div class="bal" id="bal"></div></div>
+  <div class="area"><button data-a="tab" data-i="cliente" id="t1">Área do cliente</button><button data-a="tab" data-i="vendedor" id="t2">Área do vendedor</button></div>
+</div></header>
+<main id="app"></main>
+<footer>Prado’s Filas · <a href="#" data-a="reset" style="color:inherit">Restaurar dados de exemplo</a></footer>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const tt=n=>Number(n).toFixed(2).replace('.',',')+' TT';
+const TYPES=['Mercado','Mercearia','Padaria','Farmácia','Loja de roupas','Outros'];
+const coin=z=>`<svg width="${z}" height="${z}" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#e8b923" stroke="#b8860b" stroke-width="2"/><circle cx="20" cy="20" r="15.5" fill="none" stroke="#b8860b" stroke-dasharray="2 2"/><rect x="14" y="7" width="12" height="20" rx="4" fill="#9a6a3a"/><circle cx="18" cy="14" r="2" fill="#fff"/><circle cx="22" cy="14" r="2" fill="#fff"/><circle cx="18" cy="14" r=".8" fill="#222"/><circle cx="22" cy="14" r=".8" fill="#222"/><path d="M17.5 20q2.5 2.2 5 0" stroke="#3b2412" fill="none" stroke-width="1.3"/><text x="20" y="35.5" font-size="7" font-weight="800" text-anchor="middle" fill="#7a5200">TT</text></svg>`;
+const seed=()=>[
+ {id:'s1',name:'Mercadinho do Zé',type:'Mercearia',size:'pequeno',desc:'Mercearia de bairro com itens do dia a dia.',products:[{id:'p1',name:'Pão francês (un)',desc:'Fresquinho, assado na hora',price:1.5},{id:'p2',name:'Leite 1L',desc:'Integral',price:6.2},{id:'p3',name:'Café 500g',desc:'Torrado e moído',price:18.9},{id:'p4',name:'Açúcar 1kg',desc:'Refinado',price:5.5}]},
+ {id:'s2',name:'Hiper Prado',type:'Mercado',size:'grande',desc:'Supermercado completo com vários caixas.',products:[{id:'p5',name:'Arroz 5kg',desc:'Tipo 1',price:29.9},{id:'p6',name:'Feijão 1kg',desc:'Carioca',price:8.7},{id:'p7',name:'Frango congelado',desc:'Inteiro, 1,5kg',price:14.5},{id:'p8',name:'Refrigerante 2L',desc:'Cola',price:9.9},{id:'p9',name:'Sabão em pó',desc:'1kg',price:16.4},{id:'p10',name:'Chocolate',desc:'Barra 90g',price:6.5}]}];
+let S={stores:ld('pf_stores',null)||seed(),bal:ld('pf_bal',1000),rec:ld('pf_rec',[])};
+let U={tab:'cliente',vt:'cad',store:null,cart:{},need:'normal',receipt:null,ms:null,edit:null,q:{},track:null};
+const save=()=>{sv('pf_stores',S.stores);sv('pf_bal',S.bal);sv('pf_rec',S.rec)};
+const NEEDS={rapida:['Compra rápida','Poucos produtos, quero sair logo'],normal:['Atendimento normal','Compra comum'],assist:['Atendimento com assistência','Preciso de ajuda de um funcionário']};
+const LANES=[{n:'Caixa 1 · Rápido',t:'rapida'},{n:'Caixa 2 · Normal',t:'normal'},{n:'Caixa 3 · Normal',t:'normal'},{n:'Caixa 4 · Assistido',t:'assist'}];
+const PER={rapida:1.5,normal:3,assist:5},ITEM={rapida:.3,normal:.4,assist:.7};
+function toast(m){$('#toast').innerHTML='<div class="toast">'+esc(m)+'</div>';setTimeout(()=>$('#toast').innerHTML='',2300)}
+const cur=()=>S.stores.find(s=>s.id===U.store);
+const curMs=()=>S.stores.find(s=>s.id===U.ms)||S.stores[0];
+const qty=()=>Object.values(U.cart).reduce((a,b)=>a+b,0);
+const tot=()=>{const s=cur();return s?s.products.reduce((a,p)=>a+(U.cart[p.id]||0)*p.price,0):0};
+const queues=id=>U.q[id]||(U.q[id]=LANES.map(()=>Math.floor(Math.random()*8)));
+// Recomendação: quantidade de produtos + tamanho da fila + necessidade (compatibilidade)
+function lanes(){
+  const n=qty(),q=queues(U.store);
+  return LANES.map((l,i)=>{
+    let ok=false,pen=0;
+    if(U.need==='assist'){ok=l.t==='assist'}
+    else if(U.need==='rapida'){ok=(l.t==='rapida'&&n<=10)||l.t==='normal';pen=l.t==='rapida'?0:2}
+    else{ok=l.t==='normal'||(l.t==='rapida'&&n<=10);pen=l.t==='normal'?0:3}
+    const mins=Math.round(q[i]*PER[l.t]+n*ITEM[l.t]);
+    return {...l,i,q:q[i],mins,ok,score:mins+pen};
+  });
+}
+const best=()=>lanes().filter(l=>l.ok).sort((a,b)=>a.score-b.score)[0];
+function render(){
+  if(U.store&&!cur())U.store=null;
+  $('#bal').innerHTML=coin(26)+'<span>'+tt(S.bal)+'</span>';
+  $('#t1').className=U.tab==='cliente'?'on':'';$('#t2').className=U.tab==='vendedor'?'on':'';
+  $('#app').innerHTML=U.tab==='cliente'?(U.receipt?vReceipt():U.store?vStore():vStores()):vSeller();
+}
+/* ---------- CLIENTE ---------- */
+function vStores(){
+  let h='<h2>Estabelecimentos</h2>';
+  h+=S.stores.length?'<div class="grid">'+S.stores.map(s=>`<div class="card"><span class="badge" style="align-self:flex-start">${esc(s.type)}</span><h3 style="margin-top:8px">${esc(s.name)}</h3><div class="mu grow">${esc(s.desc)||'Sem descrição.'}</div><div style="margin-top:12px"><button class="b" data-a="open" data-i="${s.id}">Entrar na loja</button></div></div>`).join('')+'</div>':'<div class="card mu">Nenhum estabelecimento cadastrado ainda.</div>';
+  if(S.rec.length)h+='<h2 style="margin-top:22px">Meus comprovantes</h2><div class="card">'+S.rec.slice(0,5).map(r=>`<div class="row"><span><b>${r.proto}</b><br><span class="mu">${esc(r.store)} · ${r.date}</span></span><span>${tt(r.total)} <button class="b s sm" data-a="showrec" data-i="${r.proto}">Abrir</button></span></div>`).join('')+'</div>';
+  return h;
+}
+function vStore(){
+  const s=cur(),n=qty(),t=tot(),g=s.size==='grande';
+  const prods=s.products.length?'<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(170px,1fr))">'+s.products.map(p=>`<div class="card" style="padding:12px"><b>${esc(p.name)}</b><div class="mu grow">${esc(p.desc)}</div><div style="margin:8px 0"><b>${tt(p.price)}</b></div>${U.cart[p.id]?`<div class="qty"><button class="b s sm" data-a="dec" data-i="${p.id}">−</button><b>${U.cart[p.id]}</b><button class="b sm" data-a="inc" data-i="${p.id}">+</button></div>`:`<button class="b sm" data-a="inc" data-i="${p.id}">Adicionar</button>`}</div>`).join('')+'</div>':'<div class="card mu">Esta loja ainda não tem produtos.</div>';
+  let side='<div class="card"><h3>Carrinho</h3>';
+  if(!n)side+='<div class="mu">Seu carrinho está vazio.</div>';
+  else side+=s.products.filter(p=>U.cart[p.id]).map(p=>`<div class="row"><span>${esc(p.name)}<br><span class="mu">${tt(p.price)} cada</span></span><span class="qty"><button class="b s sm" data-a="dec" data-i="${p.id}">−</button><b>${U.cart[p.id]}</b><button class="b sm" data-a="inc" data-i="${p.id}">+</button><button class="b d sm" data-a="rm" data-i="${p.id}">Remover</button></span></div>`).join('')+`<div class="row"><span>Total (${n} item${n>1?'s':''})</span><span class="total">${tt(t)}</span></div>`;
+  side+='</div>';
+  if(n&&g){
+    const L=lanes(),b=best();
+    side+='<div class="card"><h3>Tipo de atendimento</h3>'+Object.entries(NEEDS).map(([k,v])=>`<button class="opt ${U.need===k?'on':''}" data-a="need" data-i="${k}"><b>${v[0]}</b><span class="mu">${v[1]}</span></button>`).join('')+'</div>';
+    side+='<div class="card"><h3>Caixas</h3><div class="mu" style="margin-bottom:8px">Filas e tempos atualizam automaticamente. A recomendação considera sua quantidade de produtos, o tamanho das filas e o atendimento escolhido.</div>'+L.map(l=>`<div class="lane ${b&&b.i===l.i?'rec':''} ${l.ok?'':'off'}"><b>${l.n}</b> ${b&&b.i===l.i?'<span class="tag">Recomendado</span>':''}<br><span class="mu">${l.q} pessoa(s) na fila · espera ≈ ${l.mins} min${l.ok?'':' · não atende sua necessidade'}</span></div>`).join('')+'</div>';
+  }
+  if(n){
+    side+=`<button class="b" style="width:100%;padding:12px" data-a="pay" ${t>S.bal?'disabled':''}>Finalizar e pagar com TT</button>`+(t>S.bal?'<div style="color:var(--er);font-size:.85rem;margin-top:6px">Saldo insuficiente.</div>':'');
+  }
+  return `<button class="b s sm" data-a="back">← Estabelecimentos</button><h2 style="margin:12px 0 4px">${esc(s.name)}</h2><div class="mu" style="margin-bottom:12px">${esc(s.type)}${s.desc?' · '+esc(s.desc):''}</div><div class="cols"><div>${prods}</div><div>${side}</div></div>`;
+}
+function vReceipt(){
+  const r=U.receipt,T=U.track&&U.track.proto===r.proto?U.track:null;
+  let live='';
+  if(T)live=`<div class="live"><b>${r.laneName}</b><br>`+(T.ahead>0?`Posição na fila: ${T.ahead+1}º · espera estimada ≈ ${Math.max(1,Math.round(T.ahead*T.per))} min (atualiza sozinho)`:'<b>Sua vez!</b> Dirija-se ao caixa e apresente o protocolo.')+'</div>';
+  return `<div class="card"><div class="badge">Pagamento confirmado</div><h2 style="margin:10px 0 0">Comprovante</h2><div class="mu">${esc(r.store)} · ${r.date}</div><div style="margin:14px 0"><div class="mu">Protocolo</div><div class="proto">${r.proto}</div></div>${live}
+  ${r.laneName&&!T?`<div class="row"><span>Caixa recomendado</span><span>${esc(r.laneName)}</span></div>`:''}
+  ${r.size==='pequeno'?'<div class="row"><span>Conferência</span><span>Apresente o protocolo no caixa</span></div>':''}
+  ${r.items.map(i=>`<div class="row"><span>${i.q}× ${esc(i.n)}</span><span>${tt(i.q*i.p)}</span></div>`).join('')}
+  <div class="row"><b>Total</b><span class="total">${tt(r.total)}</span></div><div class="row"><span>Saldo atual</span><span>${tt(r.after)}</span></div>
+  <div class="noprint" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="b" data-a="print">Imprimir</button><button class="b s" data-a="done">Voltar às lojas</button></div></div>`;
+}
+/* ---------- VENDEDOR ---------- */
+function vSeller(){
+  const t=U.vt;
+  let h='<div class="tabs">'+[['cad','Cadastrar estabelecimento'],['lojas','Minhas lojas'],['prod','Gerenciar produtos']].map(x=>`<button class="${t===x[0]?'on':''}" data-a="vt" data-i="${x[0]}">${x[1]}</button>`).join('')+'</div>';
+  if(t==='cad')h+=`<h2>Cadastrar estabelecimento</h2><form class="card" id="fs" style="max-width:560px"><label>Nome do estabelecimento</label><input name="n" required maxlength="40" placeholder="Ex.: Padaria Central"><label>Tipo de comércio</label><select name="t">${TYPES.map(x=>`<option>${x}</option>`).join('')}</select><label>Porte</label><select name="z"><option value="pequeno">Pequeno: carrinho e protocolo para conferência no caixa</option><option value="grande">Grande: carrinho, protocolo e recomendação de caixa</option></select><label>Descrição (opcional)</label><textarea name="d" maxlength="140" placeholder="Fale um pouco sobre a loja"></textarea><div style="margin-top:16px"><button class="b" type="submit">Cadastrar estabelecimento</button></div></form>`;
+  if(t==='lojas'){
+    h+='<h2>Minhas lojas</h2>'+(S.stores.length?'<div class="grid">'+S.stores.map(s=>`<div class="card"><div><span class="badge">${esc(s.type)}</span> <span class="badge">Porte ${s.size}</span></div><h3 style="margin-top:8px">${esc(s.name)}</h3><div class="mu grow">${esc(s.desc)||'Sem descrição.'}<br>${s.products.length} produto(s)</div><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="b sm" data-a="manage" data-i="${s.id}">Gerenciar produtos</button><button class="b d sm" data-a="delstore" data-i="${s.id}">Excluir</button></div></div>`).join('')+'</div>':'<div class="card mu">Nenhuma loja cadastrada. Use a aba “Cadastrar estabelecimento”.</div>');
+  }
+  if(t==='prod'){
+    const ms=curMs();
+    if(!ms)return h+'<div class="card mu">Cadastre um estabelecimento antes de adicionar produtos.</div>';
+    const e=ms.products.find(p=>p.id===U.edit);
+    h+=`<h2>Gerenciar produtos</h2><div class="card" style="max-width:560px"><label>Estabelecimento</label><select id="sel">${S.stores.map(s=>`<option value="${s.id}" ${s.id===ms.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+    <div class="cols eq"><form class="card" id="fp"><h3>${e?'Editar produto':'Novo produto'}</h3><label>Nome do produto</label><input name="n" required maxlength="40" value="${e?esc(e.name):''}"><label>Descrição ou detalhes</label><input name="d" maxlength="80" value="${e?esc(e.desc):''}"><label>Preço (TT)</label><input name="p" type="number" step="0.01" min="0.01" required value="${e?e.price:''}"><div style="margin-top:16px;display:flex;gap:8px"><button class="b" type="submit">${e?'Salvar alterações':'Adicionar produto'}</button>${e?'<button class="b s" type="button" data-a="canceledit">Cancelar</button>':''}</div></form>
+    <div class="card"><h3>Produtos de ${esc(ms.name)} (${ms.products.length})</h3>${ms.products.map(p=>`<div class="row"><span>${esc(p.name)}<br><span class="mu">${esc(p.desc)} · <b>${tt(p.price)}</b></span></span><span><button class="b s sm" data-a="edit" data-i="${p.id}">Editar</button> <button class="b d sm" data-a="delprod" data-i="${p.id}">Excluir</button></span></div>`).join('')||'<span class="mu">Nenhum produto ainda.</span>'}</div></div>`;
+  }
+  return h;
+}
+/* ---------- EVENTOS ---------- */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]');if(!el)return;e.preventDefault();
+  const a=el.dataset.a,i=el.dataset.i;
+  if(a==='tab'){U.tab=i;U.receipt=null}
+  else if(a==='vt'){U.vt=i;U.edit=null}
+  else if(a==='open'){U.store=i;U.cart={};U.need='normal'}
+  else if(a==='back'){U.store=null;U.cart={}}
+  else if(a==='inc')U.cart[i]=(U.cart[i]||0)+1;
+  else if(a==='dec'){U.cart[i]=(U.cart[i]||0)-1;if(U.cart[i]<=0)delete U.cart[i]}
+  else if(a==='rm')delete U.cart[i];
+  else if(a==='need')U.need=i;
+  else if(a==='pay')return pay();
+  else if(a==='done'){U.receipt=null;U.store=null;U.cart={}}
+  else if(a==='print')return window.print();
+  else if(a==='showrec')U.receipt=S.rec.find(r=>r.proto===i);
+  else if(a==='manage'){U.ms=i;U.edit=null;U.vt='prod'}
+  else if(a==='delstore'){if(!confirm('Excluir esta loja e seus produtos?'))return;S.stores=S.stores.filter(s=>s.id!==i);if(U.ms===i)U.ms=null;save();toast('Loja excluída')}
+  else if(a==='edit')U.edit=i;
+  else if(a==='canceledit')U.edit=null;
+  else if(a==='delprod'){const m=curMs();m.products=m.products.filter(p=>p.id!==i);if(U.edit===i)U.edit=null;save();toast('Produto excluído')}
+  else if(a==='reset'){if(!confirm('Apagar tudo e restaurar os exemplos e o saldo de 1.000 TT?'))return;S={stores:seed(),bal:1000,rec:[]};U={tab:'cliente',vt:'cad',store:null,cart:{},need:'normal',receipt:null,ms:null,edit:null,q:{},track:null};save()}
+  render();
+});
+document.addEventListener('change',e=>{if(e.target.id==='sel'){U.ms=e.target.value;U.edit=null;render()}});
+document.addEventListener('submit',e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  if(e.target.id==='fs'){const ns={id:uid(),name:f.get('n').trim(),type:f.get('t'),size:f.get('z'),desc:(f.get('d')||'').trim(),products:[]};S.stores.push(ns);U.ms=ns.id;U.vt='prod';save();toast('Estabelecimento cadastrado. Adicione os produtos.')}
+  if(e.target.id==='fp'){const m=curMs(),pr=parseFloat(f.get('p'));
+    if(U.edit){const p=m.products.find(p=>p.id===U.edit);p.name=f.get('n').trim();p.desc=(f.get('d')||'').trim();p.price=pr;U.edit=null;toast('Produto atualizado')}
+    else{m.products.push({id:uid(),name:f.get('n').trim(),desc:(f.get('d')||'').trim(),price:pr});toast('Produto adicionado')}
+    save()}
+  render();
+});
+function pay(){
+  const s=cur(),t=tot();if(!qty()||t>S.bal)return;
+  const g=s.size==='grande',d=new Date(),proto='PF-'+Math.floor(100000+Math.random()*900000);
+  const b=g?best():null;
+  S.bal=Math.round((S.bal-t)*100)/100;
+  const r={proto,store:s.name,size:s.size,laneName:b?b.n:'',date:d.toLocaleString('pt-BR'),total:t,after:S.bal,items:s.products.filter(p=>U.cart[p.id]).map(p=>({n:p.name,p:p.price,q:U.cart[p.id]}))};
+  if(b){U.track={proto,ahead:b.q,per:PER[b.t]};queues(U.store)[b.i]++}else U.track=null;
+  S.rec.unshift(r);save();U.receipt=r;U.cart={};render();window.scrollTo(0,0);
+}
+// Filas e tempos automáticos: os caixas atendem e novos clientes chegam
+setInterval(()=>{
+  for(const id in U.q)U.q[id]=U.q[id].map(q=>{if(q>0&&Math.random()<.55)q--;if(q<12&&Math.random()<.35)q++;return q});
+  if(U.track&&U.track.ahead>0&&Math.random()<.55)U.track.ahead--;
+  const s=U.store&&cur();
+  if(U.tab==='cliente'&&(U.receipt||(s&&s.size==='grande'&&qty())))render();
+},4000);
+render();
+</script>
+</body>
+</html>
